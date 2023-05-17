@@ -38,6 +38,9 @@ jobs:
           context: ./project-1/
           push: true
           tags: ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_NAME }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
 
       - name: Create or update ECR repository
         run: |
