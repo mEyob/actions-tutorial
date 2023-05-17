@@ -9,8 +9,8 @@ on:
 
 env:
   ECR_REGION: us-east-1  # Replace with your AWS ECR region
-  ECR_REPOSITORY: test-ecr-repo  # Replace with your AWS ECR repository name
-  IMAGE_NAME: test-image  # Replace with the desired image name
+  ECR_URL: 061337405541.dkr.ecr.us-east-1.amazonaws.com  # Replace with your AWS ECR repository name
+  ECR_REPOSITORY: test-ecr-repo
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -27,73 +27,10 @@ jobs:
 
       - name: Login to AWS ECR
         run: |
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 061337405541.dkr.ecr.us-east-1.amazonaws.com
-          docker build -f ./project-1/Dockerfile ./project-1/
-        env:
-          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Build and Push Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: ./project-1/
-          push: true
-          tags: ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_NAME }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Create or update ECR repository
-        run: |
-          aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }} --region ${{ env.ECR_REGION }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Update ECR repository policy
-        run: |
-          aws ecr set-repository-policy --repository-name ${{ env.ECR_REPOSITORY }} --region ${{ env.ECR_REGION }} --policy-text '{
-            "Version": "2008-10-17",
-            "Statement": [
-              {
-                "Sid": "AllowPushPull",
-                "Effect": "Allow",
-                "Principal": "*",
-                "Action": [
-                  "ecr:GetDownloadUrlForLayer",
-                  "ecr:BatchGetImage",
-                  "ecr:BatchCheckLayerAvailability",
-                  "ecr:PutImage",
-                  "ecr:InitiateLayerUpload",
-                  "ecr:UploadLayerPart",
-                  "ecr:CompleteLayerUpload",
-                  "ecr:DescribeRepositories",
-                  "ecr:GetRepositoryPolicy",
-                  "ecr:ListImages",
-                  "ecr:TagResource",
-                  "ecr:UntagResource",
-                  "ecr:SetRepositoryPolicy",
-                  "ecr:DeleteRepository",
-                  "ecr:DeleteRepositoryPolicy",
-                  "ecr:GetLifecyclePolicy",
-                  "ecr:GetLifecyclePolicyPreview",
-                  "ecr:ListTagsForResource",
-                  "ecr:PutLifecyclePolicy",
-                  "ecr:GetRegistryPolicy",
-                  "ecr:GetLifecyclePolicyPreview"
-                ]
-              }
-            ]
-          }'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
-
-      - name: Deploy to ECR
-        run: |
-          aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }} --region ${{ env.ECR_REGION }}
-          aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=${{ env.IMAGE_NAME }} --region ${{ env.ECR_REGION }}
-          aws ecr put-image --repository-name ${{ env.ECR_REPOSITORY }} --image-tag ${{ env.IMAGE_NAME }} --image-manifest ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_NAME }} --region ${{ env.ECR_REGION }}
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.ECR_URL }}
+          docker build -t ${{ env.ECR_REPOSITORY }}:latest -f ./project-1/Dockerfile ./project-1/
+          docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.ECR_URL }}/${{ ECR_REPOSITORY }}:latest
+          docker push ${{ env.ECR_URL }}/${{ ECR_REPOSITORY }}:latest
         env:
           AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
