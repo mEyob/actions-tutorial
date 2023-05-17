@@ -3,7 +3,7 @@ name: Build and Deploy to AWS ECR
 on:
   pull_request:
     branches:
-      - master
+      - main
     paths:
       - 'project-1/'
 
