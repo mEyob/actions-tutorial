@@ -1,4 +1,4 @@
-name: Build and Deploy to AWS ECR
+name: Build and Deploy Proj-2 to AWS ECR
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ env:
   ECR_REGION: us-east-1
   ECR_URL: 061337405541.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: test-ecr-repo
-  IMAGE_TAG: ${{ vars.GITHUB_REF_NAME }}
+  IMAGE_TAG: ${{ github.GITHUB_REF_NAME }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
