@@ -37,6 +37,17 @@ jobs:
       - name: Build docker image
         run: |
           docker build -t ${{ env.ECR_REPOSITORY }}:latest -f ${{ env.PROJECT_DIR }}/Dockerfile ${{ env.PROJECT_DIR }}/
+          
+      - name: Set image tag for prod
+        if: github.ref == 'main'
+        run: |
+          echo "::set-env name=IMAGE_TAG::latest"
+          
+      - name: Set image tag for non-prod
+        if: github.ref != 'main'
+        run: |
+          echo "::set-env name=IMAGE_TAG::latest-dev"
+          
       - name: Tag and push image
         run: |
           docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.ECR_URL }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
