@@ -43,7 +43,11 @@ jobs:
           docker build -t ${{ env.ECR_REPOSITORY }}:latest -f ${{ env.PROJECT_DIR }}/Dockerfile ${{ env.PROJECT_DIR }}/
                     
       - name: Set image tag
-        run: echo "IMAGE_TAG=$(if [$GITHUB_REF_NAME == 'main'] then latest else latest-dev fi)" >> $GITHUB_ENV
+        run: |
+          if [ $GITHUB_REF_NAME == 'main' ] then IMAGE_TAG=latest else IMAGE_TAG=latest-dev fi
+          echo "IMAGE_TAG=$IMAGE_TAG"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          
       - name: Tag and push image
         run: |
           docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.ECR_URL }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
