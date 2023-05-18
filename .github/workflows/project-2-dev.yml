@@ -17,6 +17,7 @@ env:
   ECR_REGION: us-east-1
   ECR_URL: 061337405541.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: test-ecr-repo
+  IMAGE_TAG: github.ref
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -41,17 +42,7 @@ jobs:
       - name: Build docker image
         run: |
           docker build -t ${{ env.ECR_REPOSITORY }}:latest -f ${{ env.PROJECT_DIR }}/Dockerfile ${{ env.PROJECT_DIR }}/
-          
-      - name: Set image tag for prod
-        if: github.ref == 'main'
-        run: |
-          echo "::set-env name=IMAGE_TAG::latest"
-          
-      - name: Set image tag for non-prod
-        if: github.ref != 'main'
-        run: |
-          echo "::set-env name=IMAGE_TAG::latest-dev"
-          
+                    
       - name: Tag and push image
         run: |
           docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.ECR_URL }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
