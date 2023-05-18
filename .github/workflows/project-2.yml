@@ -1,6 +1,11 @@
 name: Build and Deploy to AWS ECR
 
 on:
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - 'project-2/**'
   push:
     branches:
       - main
@@ -12,6 +17,7 @@ env:
   ECR_REGION: us-east-1
   ECR_URL: 061337405541.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: test-ecr-repo
+  IMAGE_TAG: ${{ vars.GITHUB_REF_NAME }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -36,7 +42,8 @@ jobs:
       - name: Build docker image
         run: |
           docker build -t ${{ env.ECR_REPOSITORY }}:latest -f ${{ env.PROJECT_DIR }}/Dockerfile ${{ env.PROJECT_DIR }}/
+                    
       - name: Tag and push image
         run: |
-          docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.ECR_URL }}/${{ env.ECR_REPOSITORY }}:latest
-          docker push ${{ env.ECR_URL }}/${{ env.ECR_REPOSITORY }}:latest
+          docker tag ${{ env.ECR_REPOSITORY }}:latest ${{ env.ECR_URL }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.ECR_URL }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
