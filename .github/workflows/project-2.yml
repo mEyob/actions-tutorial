@@ -1,14 +1,14 @@
 name: Build and Deploy to AWS ECR
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths:
-      - 'project-1/**'
+      - 'project-2/**'
 
 env:
-  PROJECT_DIR: ./project-1
+  PROJECT_DIR: ./project-2
   ECR_REGION: us-east-1
   ECR_URL: 061337405541.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: test-ecr-repo
