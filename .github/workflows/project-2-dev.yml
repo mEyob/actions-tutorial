@@ -6,13 +6,17 @@ on:
       - develop
     paths:
       - 'project-2/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'project-2/**'
 
 env:
   PROJECT_DIR: ./project-2
   ECR_REGION: us-east-1
   ECR_URL: 061337405541.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: test-ecr-repo
-  IMAGE_TAG: latest-dev
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
