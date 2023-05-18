@@ -1,4 +1,4 @@
-name: Build and Deploy to AWS ECR
+name: Build and Deploy Proj-2 to AWS ECR
 
 on:
   pull_request:
